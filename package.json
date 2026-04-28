@@ -1,6 +1,11 @@
 {
   "name": "codeatlas",
   "displayName": "CodeAtlas",
+  "publisher": "akdey",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/akdey/CodeAtlas.git"
+  },
   "description": "Codebase Graph and MCP Server Extension",
   "version": "0.0.1",
   "engines": {
