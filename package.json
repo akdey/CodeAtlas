@@ -19,10 +19,51 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "configuration": {
+      "title": "CodeAtlas",
+      "properties": {
+        "codeatlas.port": {
+          "type": "number",
+          "default": 3025,
+          "description": "Default port for the MCP SSE Server."
+        },
+        "codeatlas.autoStart": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically start the CodeAtlas MCP server when opening a workspace."
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "codeatlas-sidebar-view",
+          "title": "CodeAtlas",
+          "icon": "resources/globe.svg"
+        }
+      ]
+    },
+    "views": {
+      "codeatlas-sidebar-view": [
+        {
+          "type": "webview",
+          "id": "codeatlas.sidebar",
+          "name": "Control Panel"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "codeatlas.start",
         "title": "CodeAtlas: Start Server"
+      },
+      {
+        "command": "codeatlas.stop",
+        "title": "CodeAtlas: Stop Server"
+      },
+      {
+        "command": "codeatlas.clearDb",
+        "title": "CodeAtlas: Clear Database"
       },
       {
         "command": "codeatlas.showGraph",
@@ -34,32 +75,24 @@
     "vscode:prepublish": "npm run package",
     "compile": "webpack",
     "watch": "webpack --watch",
-    "package": "webpack --mode production --devtool hidden-source-map",
-    "compile-tests": "tsc -p . --outDir out",
-    "watch-tests": "tsc -p . -w --outDir out",
-    "pretest": "npm run compile-tests && npm run compile && npm run lint",
-    "lint": "eslint src --ext ts",
-    "test": "vscode-test"
+    "package": "webpack --mode production --devtool hidden-source-map"
   },
   "devDependencies": {
-    "@types/vscode": "^1.85.0",
+    "@types/express": "^4.17.21",
     "@types/node": "18.x",
-    "@typescript-eslint/eslint-plugin": "^6.13.1",
-    "@typescript-eslint/parser": "^6.13.1",
-    "eslint": "^8.54.0",
+    "@types/vscode": "^1.85.0",
     "ts-loader": "^9.5.1",
-    "typescript": "^5.3.2",
+    "typescript": "^5.3.3",
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.6.0",
-    "@ladybugdb/core": "latest",
-    "tree-sitter": "^0.21.1",
-    "tree-sitter-javascript": "^0.21.4",
-    "tree-sitter-typescript": "^0.21.2",
-    "tree-sitter-python": "^0.21.0",
+    "@ladybugdb/core": "*",
+    "@modelcontextprotocol/sdk": "^1.0.1",
     "express": "^4.19.2",
-    "@types/express": "^4.17.21"
+    "tree-sitter": "^0.21.0",
+    "tree-sitter-javascript": "^0.21.2",
+    "tree-sitter-python": "^0.21.0",
+    "tree-sitter-typescript": "^0.21.1"
   }
 }

@@ -75,9 +75,9 @@ export class GraphVisualizer {
   <title>CodeAtlas Graph</title>
   <script src="https://unpkg.com/force-graph"></script>
   <style>
-    body { margin: 0; padding: 0; background-color: #0b0f19; overflow: hidden; font-family: sans-serif; }
+    body { margin: 0; padding: 0; background-color: var(--vscode-editor-background); color: var(--vscode-editor-foreground); overflow: hidden; font-family: var(--vscode-font-family); }
     #graph-container { width: 100vw; height: 100vh; }
-    .loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #60a5fa; font-size: 1.2rem; font-weight: bold; font-family: monospace;}
+    .loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--vscode-textLink-foreground); font-size: 1.2rem; font-weight: bold; font-family: monospace;}
   </style>
 </head>
 <body>
@@ -87,13 +87,17 @@ export class GraphVisualizer {
     const container = document.getElementById('graph-container');
     const loading = document.getElementById('loading');
     
+    // Get VS Code theme background
+    const bgColor = getComputedStyle(document.body).getPropertyValue('--vscode-editor-background').trim() || '#1e1e1e';
+    const linkColor = getComputedStyle(document.body).getPropertyValue('--vscode-editorLineNumber-foreground').trim() || 'rgba(100, 100, 100, 0.4)';
+
     // Initialize force-graph
     const Graph = ForceGraph()(container)
-      .backgroundColor('#0b0f19')
+      .backgroundColor(bgColor)
       .nodeRelSize(6)
       .nodeColor(node => node.group === 1 ? '#3b82f6' : '#a855f7')
       .nodeLabel('name')
-      .linkColor(() => 'rgba(56, 189, 248, 0.2)')
+      .linkColor(() => linkColor)
       .linkDirectionalParticles(2)
       .linkDirectionalParticleSpeed(0.005)
       .linkDirectionalParticleWidth(1.5)

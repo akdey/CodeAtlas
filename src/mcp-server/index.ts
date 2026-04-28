@@ -10,6 +10,7 @@ export class CodeAtlasMCPServer {
   private transport?: SSEServerTransport;
   private db: CodeAtlasDB;
   private port: number;
+  private httpServer: any;
 
   constructor(db: CodeAtlasDB, port: number = 3025) {
     this.db = db;
@@ -106,9 +107,24 @@ export class CodeAtlasMCPServer {
     });
   }
 
-  public start() {
-    this.app.listen(this.port, () => {
-      console.log(`CodeAtlas MCP Server listening on port ${this.port}`);
+  public start(): Promise<number> {
+    return new Promise((resolve, reject) => {
+      this.httpServer = this.app.listen(this.port, () => {
+        const actualPort = this.httpServer.address().port;
+        this.port = actualPort;
+        console.log(`CodeAtlas MCP Server listening on port ${actualPort}`);
+        resolve(actualPort);
+      }).on('error', (err: any) => {
+        reject(err);
+      });
     });
+  }
+
+  public stop() {
+    if (this.httpServer) {
+      this.httpServer.close();
+      this.httpServer = null;
+      console.log('CodeAtlas MCP Server stopped.');
+    }
   }
 }
