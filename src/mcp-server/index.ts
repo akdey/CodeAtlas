@@ -76,18 +76,18 @@ export class CodeAtlasMCPServer {
           };
         } catch (error: any) {
           return {
-             content: [
-               {
-                 type: 'text',
-                 text: \`Error retrieving graph neighborhood: \${error.message}\`
-               }
-             ],
-             isError: true
-          }
+            content: [
+              {
+                type: 'text',
+                text: `Error retrieving graph neighborhood: ${error.message}`
+              }
+            ],
+            isError: true
+          };
         }
       }
 
-      throw new Error(\`Tool not found: \${request.params.name}\`);
+      throw new Error(`Tool not found: ${request.params.name}`);
     });
   }
 
@@ -108,7 +108,7 @@ export class CodeAtlasMCPServer {
 
   public start() {
     this.app.listen(this.port, () => {
-      console.log(\`CodeAtlas MCP Server listening on port \${this.port}\`);
+      console.log(`CodeAtlas MCP Server listening on port ${this.port}`);
     });
   }
 }

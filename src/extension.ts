@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { CodeAtlasDB } from './graph/db';
 import { CodeAtlasMCPServer } from './mcp-server';
 import { ParserEngine } from './parser';
+import { GraphVisualizer } from './webview';
 
 let mcpServer: CodeAtlasMCPServer | undefined;
 let db: CodeAtlasDB | undefined;
@@ -36,7 +37,7 @@ export async function activate(context: vscode.ExtensionContext) {
     const processFile = async (uri: vscode.Uri) => {
       if (!parserEngine || !db) return;
       try {
-        console.log(\`Parsing \${uri.fsPath}\`);
+        console.log(`Parsing ${uri.fsPath}`);
         const { nodes, edges } = parserEngine.parseFile(uri.fsPath);
         
         for (const node of nodes) {
@@ -45,9 +46,9 @@ export async function activate(context: vscode.ExtensionContext) {
         for (const edge of edges) {
           await db.upsertEdge(edge);
         }
-        console.log(\`Updated graph for \${uri.fsPath}\`);
+        console.log(`Updated graph for ${uri.fsPath}`);
       } catch (error) {
-        console.error(\`Failed to parse \${uri.fsPath}\`, error);
+        console.error(`Failed to parse ${uri.fsPath}`, error);
       }
     };
 
@@ -64,10 +65,19 @@ export async function activate(context: vscode.ExtensionContext) {
       vscode.window.showInformationMessage('CodeAtlas: Workspace Sync Completed');
     });
 
+    let visualizerDisposable = vscode.commands.registerCommand('codeatlas.showGraph', () => {
+      if (db) {
+        GraphVisualizer.show(context, db);
+      } else {
+        vscode.window.showErrorMessage('CodeAtlas Database not initialized yet.');
+      }
+    });
+
     context.subscriptions.push(disposable);
+    context.subscriptions.push(visualizerDisposable);
     vscode.window.showInformationMessage('CodeAtlas Server Started on http://localhost:3025/sse');
   } catch (err: any) {
-    vscode.window.showErrorMessage(\`Failed to start CodeAtlas: \${err.message}\`);
+    vscode.window.showErrorMessage(`Failed to start CodeAtlas: ${err.message}`);
     console.error(err);
   }
 }

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <rect width="256" height="256" rx="48" fill="#0f172a" />
+  
+  <g stroke="#38bdf8" stroke-width="3" fill="none" opacity="0.8">
+    <!-- Globe outline -->
+    <circle cx="128" cy="128" r="80" />
+    <ellipse cx="128" cy="128" rx="40" ry="80" />
+    <line x1="48" y1="128" x2="208" y2="128" />
+  </g>
+
+  <!-- Nodes -->
+  <g fill="#818cf8">
+    <circle cx="128" cy="48" r="8" />
+    <circle cx="128" cy="208" r="8" />
+    <circle cx="48" cy="128" r="8" />
+    <circle cx="208" cy="128" r="8" />
+    
+    <!-- Intersection Nodes -->
+    <circle cx="88" cy="128" r="6" />
+    <circle cx="168" cy="128" r="6" />
+    <circle cx="128" cy="128" r="10" fill="#c084fc" />
+    
+    <!-- Angled nodes -->
+    <circle cx="106" cy="80" r="5" />
+    <circle cx="150" cy="80" r="5" />
+    <circle cx="106" cy="176" r="5" />
+    <circle cx="150" cy="176" r="5" />
+  </g>
+
+  <!-- Highlight connections -->
+  <g stroke="#c084fc" stroke-width="2" opacity="0.9">
+    <line x1="128" y1="128" x2="106" y2="80" />
+    <line x1="128" y1="128" x2="168" y2="128" />
+    <line x1="168" y1="128" x2="208" y2="128" />
+  </g>
+</svg>

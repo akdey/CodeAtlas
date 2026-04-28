@@ -1,6 +1,7 @@
-# 🌎 CodeAtlas: The "Context Engine" for Vibe Coding
-
-**Stop burning thousands of tokens on "context discovery" every time you switch tools.**
+<div align="center">
+  <h1>CodeAtlas: The "Context Engine" for Vibe Coding</h1>
+  <p><strong>Stop burning thousands of tokens on "context discovery" every time you switch tools.</strong></p>
+</div>
 
 **CodeAtlas** is a powerful VS Code extension that transforms your project from a folder of text files into a **living, queryable Knowledge Graph**. By exposing a deterministic map of your entire codebase via the **Model Context Protocol (MCP)**, CodeAtlas eliminates "Context Collapse" and slashes the "Token Tax" associated with modern AI-native engineering.
 
@@ -53,11 +54,11 @@ By running an **SSE MCP Server** directly from your IDE, CodeAtlas allows any AI
 
 ---
 
-## ✨ Key Features
+## Features
 
 - 🗺️ **Deterministic Navigation:** Maps every class, function, and variable across your workspace dynamically.
 - ⚡ **Zero-Waste Context:** AI agents query the graph for "hops" (*"What are the downstream dependencies of this interface?"*) instead of reading the entire codebase.
-- 🔄 **Real-time Synchronization:** Maintains a "living map." As you type and save in VS Code, the AST is re-parsed incrementally, ensuring your AI never hallucinates an outdated architecture.
+- 🔄 **Incremental Real-time Parsing:** Maintains a "living map" without destroying your CPU. When you save a file, CodeAtlas **only re-parses that specific file** and performs a micro-update to the graph. It **does not recalculate** the whole workspace. Your AI never hallucinates an outdated architecture.
 - 🌐 **Platform Agnostic:** The standard MCP SSE server means CodeAtlas serves as a "Universal Context Layer" that follows you across VS Code, terminal agents, and web-based IDEs.
 - 🛡️ **100% Open Source Stack:** Built on fully open source, privacy-first tooling (Tree-sitter, LadybugDB). Everything stays local on your machine.
 
@@ -84,29 +85,33 @@ CodeAtlas is built for speed and compatibility:
 4. Click on the `...` (More Actions) menu in the top right corner.
 5. Select **Install from VSIX...** and choose the downloaded file.
 
-### Building from Source (Developers)
+### Connecting an AI Agent via MCP
 
-If you wish to contribute or build the extension yourself:
+Once CodeAtlas is running in your VS Code workspace, the MCP server is actively hosted on `http://localhost:3025/sse`. Because it uses standard HTTP (Server-Sent Events), connecting your vibe coding tools is extremely simple:
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/akdey/CodeAtlas.git
-   cd CodeAtlas
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Compile the extension:
-   ```bash
-   npm run compile
-4. Press \`F5\` in VS Code to open a new Extension Development Host window with CodeAtlas loaded.
+#### **Connecting to Cursor**
+1. Open Cursor Settings.
+2. Navigate to **Features > MCP Servers**.
+3. Click **+ Add New MCP Server**.
+4. Set Name to `CodeAtlas`, Type to `sse`, and URL to `http://localhost:3025/sse`.
 
-### Connecting an AI Agent
+#### **Connecting to Claude Desktop**
+1. Open your `claude_desktop_config.json`.
+2. Add the CodeAtlas SSE endpoint to your MCP servers:
+```json
+"mcpServers": {
+  "codeatlas": {
+    "command": "node", 
+    "args": [], 
+    "env": {}, 
+    "url": "http://localhost:3025/sse"
+  }
+}
+```
+*(Note: Because it's SSE, the connection handles everything over the URL. The `command` block is often ignored or bypassed for SSE in many clients, but you can use community SSE-client wrappers if required by your specific Claude Desktop version).*
 
-Once CodeAtlas is running in a workspace, the MCP server will be active at \`http://localhost:3025/sse\`. 
-
-Configure your preferred MCP-compatible AI assistant (like Claude Desktop) to connect to this SSE endpoint. The AI will immediately have access to the \`get_graph_neighborhood\` tool to explore your codebase!
+#### **Connecting to Antigravity / Other Terminal Agents**
+Provide the tool with the SSE URL `http://localhost:3025/sse`. The agent will automatically discover the `get_graph_neighborhood` tool and begin structurally navigating your code!
 
 ---
 

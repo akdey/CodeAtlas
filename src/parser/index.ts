@@ -38,17 +38,21 @@ export class ParserEngine {
       return { nodes: [], edges: [] };
     }
 
-    const content = fs.readFileSync(filePath, 'utf8');
-    const tree = activeParser.parse(content);
-    
-    return this.extractGraph(tree.rootNode, filePath, content);
+    try {
+      const content = fs.readFileSync(filePath, 'utf8');
+      const tree = activeParser.parse(content);
+      return this.extractGraph(tree.rootNode, filePath, content);
+    } catch (err) {
+      console.error(`Error parsing file ${filePath}:`, err);
+      return { nodes: [], edges: [] };
+    }
   }
 
   private extractGraph(rootNode: Parser.SyntaxNode, filePath: string, content: string) {
     const nodes: GraphNode[] = [];
     const edges: GraphEdge[] = [];
 
-    const fileUri = \`file://\${filePath.replace(/\\\\/g, '/')}\`;
+    const fileUri = `file://${filePath.replace(/\\/g, '/')}`;
     
     // Create the File node
     const fileNode: GraphNode = {
@@ -60,7 +64,6 @@ export class ParserEngine {
     nodes.push(fileNode);
 
     // Simple manual traversal to find Imports, Classes, Functions
-    // A robust implementation would use Tree-sitter Queries (.scm)
     this.traverseNode(rootNode, fileNode, nodes, edges, content);
 
     return { nodes, edges };
@@ -72,7 +75,7 @@ export class ParserEngine {
       const nameNode = node.children.find(c => c.type === 'identifier');
       if (nameNode) {
         const className = nameNode.text;
-        const classId = \`\${fileNode.id}#\${className}\`;
+        const classId = `${fileNode.id}#${className}`;
         
         nodes.push({
           id: classId,
@@ -97,7 +100,7 @@ export class ParserEngine {
       const nameNode = node.children.find(c => c.type === 'identifier' || c.type === 'property_identifier');
       if (nameNode) {
         const funcName = nameNode.text;
-        const funcId = \`\${fileNode.id}#\${funcName}\`;
+        const funcId = `${fileNode.id}#${funcName}`;
 
         nodes.push({
           id: funcId,
@@ -116,13 +119,12 @@ export class ParserEngine {
       }
     }
 
-    // Detect Imports (Very simplified for demonstration)
+    // Detect Imports
     if (node.type === 'import_statement' || node.type === 'import_from_statement') {
       const sourceNode = node.children.find(c => c.type === 'string' || c.type === 'string_fragment' || c.type === 'string_content');
       if (sourceNode) {
          let importPath = sourceNode.text.replace(/['"]/g, '');
-         // In a real app, resolve this path to absolute file URI
-         const targetFileId = \`file://\${path.resolve(path.dirname(fileNode.uri.replace('file://', '')), importPath)}\`;
+         const targetFileId = `file://${path.resolve(path.dirname(fileNode.uri.replace('file://', '')), importPath)}`;
          
          edges.push({
            sourceId: fileNode.id,

@@ -86,4 +86,31 @@ export class CodeAtlasDB {
 
     return { nodes: Array.from(nodesMap.values()), edges: edgesList };
   }
+
+  public async getAll(): Promise<{nodes: GraphNode[], edges: GraphEdge[]}> {
+    const query = `MATCH (n:Node) OPTIONAL MATCH (n)-[r:DependsOn]->(m:Node) RETURN n, r, m`;
+    const result = await this.conn.query(query);
+    
+    const nodesMap = new Map<string, GraphNode>();
+    const edgesList: GraphEdge[] = [];
+    
+    // LadybugDB returns rows based on the RETURN clause
+    for await (const row of result) {
+      if (row.n && !nodesMap.has(row.n.id)) {
+        nodesMap.set(row.n.id, row.n);
+      }
+      if (row.m && !nodesMap.has(row.m.id)) {
+        nodesMap.set(row.m.id, row.m);
+      }
+      if (row.r && row.n && row.m) {
+        // Avoid duplicate edges
+        const edgeExists = edgesList.some(e => e.sourceId === row.n.id && e.targetId === row.m.id);
+        if (!edgeExists) {
+           edgesList.push({ sourceId: row.n.id, targetId: row.m.id, type: row.r.type || 'depends' });
+        }
+      }
+    }
+
+    return { nodes: Array.from(nodesMap.values()), edges: edgesList };
+  }
 }
