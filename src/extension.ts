@@ -98,6 +98,12 @@ export async function activate(context: vscode.ExtensionContext) {
         watcher.onDidChange(processFile);
         watcher.onDidCreate(processFile);
         context.subscriptions.push(watcher);
+
+        // Initial scan to populate the in-memory graph
+        const existingFiles = await vscode.workspace.findFiles('**/*.{ts,js,py}', '**/node_modules/**');
+        for (const file of existingFiles) {
+          await processFile(file);
+        }
       }
 
       // Initialize and Start MCP Server

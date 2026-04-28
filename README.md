@@ -48,7 +48,7 @@ Instead of guessing how files are connected, your AI assistant can now query the
 
 **CodeAtlas** solves this by providing a standardized, **local-first Knowledge Graph** of your project directory. 
 
-Instead of forcing AI to guess how files are connected by reading text, CodeAtlas leverages **Tree-sitter** to parse your code into an AST and stores the structural relationships (Files, Classes, Functions, Imports) in a high-performance, embedded **LadybugDB** graph.
+Instead of forcing AI to guess how files are connected by reading text, CodeAtlas leverages **Tree-sitter** to parse your code into an AST and stores the structural relationships (Files, Classes, Functions, Imports) in a high-performance, embedded **Graphology** in-memory graph.
 
 By running an **SSE MCP Server** directly from your IDE, CodeAtlas allows any AI agent to perform **GraphRAG**—retrieving only the precise nodes and edges necessary to solve a task, with zero token waste.
 
@@ -60,7 +60,7 @@ By running an **SSE MCP Server** directly from your IDE, CodeAtlas allows any AI
 - ⚡ **Zero-Waste Context:** AI agents query the graph for "hops" (*"What are the downstream dependencies of this interface?"*) instead of reading the entire codebase.
 - 🔄 **Incremental Real-time Parsing:** Maintains a "living map" without destroying your CPU. When you save a file, CodeAtlas **only re-parses that specific file** and performs a micro-update to the graph. It **does not recalculate** the whole workspace. Your AI never hallucinates an outdated architecture.
 - 🌐 **Platform Agnostic:** The standard MCP SSE server means CodeAtlas serves as a "Universal Context Layer" that follows you across VS Code, terminal agents, and web-based IDEs.
-- 🛡️ **100% Open Source Stack:** Built on fully open source, privacy-first tooling (Tree-sitter, LadybugDB). Everything stays local on your machine.
+- 🛡️ **100% Open Source Stack:** Built on fully open source, privacy-first tooling (Tree-sitter, Graphology). Everything stays local on your machine.
 
 ---
 

@@ -1,23 +1,23 @@
-import Parser from 'tree-sitter';
-import JavaScript from 'tree-sitter-javascript';
-import TypeScript from 'tree-sitter-typescript';
-import Python from 'tree-sitter-python';
 import * as fs from 'fs';
 import * as path from 'path';
 import { GraphNode, GraphEdge } from '../graph/types';
 
 export class ParserEngine {
-  private parser: Parser;
-  private tsParser: Parser;
-  private pyParser: Parser;
+  private parser: any;
+  private tsParser: any;
+  private pyParser: any;
 
   constructor() {
+    const Parser = require('tree-sitter');
+    const JavaScript = require('tree-sitter-javascript');
+    const TypeScript = require('tree-sitter-typescript');
+    const Python = require('tree-sitter-python');
+
     this.parser = new Parser();
     this.parser.setLanguage(JavaScript);
 
     this.tsParser = new Parser();
-    // Use the typescript language from the tree-sitter-typescript package
-    this.tsParser.setLanguage(TypeScript.typescript);
+    this.tsParser.setLanguage(TypeScript.typescript || TypeScript);
 
     this.pyParser = new Parser();
     this.pyParser.setLanguage(Python);
@@ -48,7 +48,7 @@ export class ParserEngine {
     }
   }
 
-  private extractGraph(rootNode: Parser.SyntaxNode, filePath: string, content: string) {
+  private extractGraph(rootNode: any, filePath: string, content: string) {
     const nodes: GraphNode[] = [];
     const edges: GraphEdge[] = [];
 
@@ -69,10 +69,10 @@ export class ParserEngine {
     return { nodes, edges };
   }
 
-  private traverseNode(node: Parser.SyntaxNode, fileNode: GraphNode, nodes: GraphNode[], edges: GraphEdge[], content: string) {
+  private traverseNode(node: any, fileNode: GraphNode, nodes: GraphNode[], edges: GraphEdge[], content: string) {
     // Detect Classes (TS/JS and Python)
     if (node.type === 'class_declaration' || node.type === 'class_definition') {
-      const nameNode = node.children.find(c => c.type === 'identifier');
+      const nameNode = node.children.find((c: any) => c.type === 'identifier');
       if (nameNode) {
         const className = nameNode.text;
         const classId = `${fileNode.id}#${className}`;
@@ -97,7 +97,7 @@ export class ParserEngine {
 
     // Detect Functions
     if (node.type === 'function_declaration' || node.type === 'function_definition' || node.type === 'method_definition') {
-      const nameNode = node.children.find(c => c.type === 'identifier' || c.type === 'property_identifier');
+      const nameNode = node.children.find((c: any) => c.type === 'identifier' || c.type === 'property_identifier');
       if (nameNode) {
         const funcName = nameNode.text;
         const funcId = `${fileNode.id}#${funcName}`;
@@ -121,7 +121,7 @@ export class ParserEngine {
 
     // Detect Imports
     if (node.type === 'import_statement' || node.type === 'import_from_statement') {
-      const sourceNode = node.children.find(c => c.type === 'string' || c.type === 'string_fragment' || c.type === 'string_content');
+      const sourceNode = node.children.find((c: any) => c.type === 'string' || c.type === 'string_fragment' || c.type === 'string_content');
       if (sourceNode) {
          let importPath = sourceNode.text.replace(/['"]/g, '');
          const targetFileId = `file://${path.resolve(path.dirname(fileNode.uri.replace('file://', '')), importPath)}`;
